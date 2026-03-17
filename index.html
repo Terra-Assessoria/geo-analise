@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Terra Assessoria - Analisador Geoespacial V2</title>
+    <title>Terra Assessoria - Analisador Oficial V3</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://unpkg.com/shpjs@latest/dist/shp.js"></script>
@@ -12,36 +12,21 @@
     <style>
         :root { --primary: #27ae60; --dark: #1e2b37; --light: #f4f7f6; }
         body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; overflow: hidden; background: #000; }
-
-        /* TELA DE ENTRADA */
-        #home-screen {
-            position: absolute; width: 100%; height: 100%; background: var(--light);
-            display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999;
-        }
+        #home-screen { position: absolute; width: 100%; height: 100%; background: var(--light); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
         .search-box { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 420px; border-top: 6px solid var(--primary); text-align: center;}
         input { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
         .btn-main { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; }
-
-        /* INTERFACE */
         #main-app { display: none; height: 100vh; width: 100vw; flex-direction: row; }
         #sidebar { width: 350px; background: var(--dark); color: white; overflow-y: auto; z-index: 1000; border-right: 1px solid #444; }
         #maps-container { flex: 1; display: flex; flex-direction: row; gap: 4px; background: #222; }
         .map-wrapper { flex: 1; position: relative; height: 100%; border: 1px solid #444; }
-        .map-label { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 999; background: rgba(0,0,0,0.8); color: white; padding: 6px 18px; border-radius: 20px; font-size: 11px; font-weight: bold; border: 1px solid var(--primary); text-align: center; width: 220px; }
-
+        .map-label { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 999; background: rgba(0,0,0,0.8); color: white; padding: 6px 18px; border-radius: 20px; font-size: 10px; font-weight: bold; border: 1px solid var(--primary); text-align: center; width: 220px; }
         .card { background: rgba(255,255,255,0.08); padding: 15px; border-radius: 10px; margin: 10px; border-left: 4px solid var(--primary); }
         .year-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 10px; }
         .year-btn { background: #34495e; border: none; color: white; padding: 5px; font-size: 10px; cursor: pointer; border-radius: 4px; }
         .year-btn.active { background: var(--primary); color: white; }
-        
-        /* LEGENDA INTERATIVA ESTILO SEMA */
-        .legend-grid { margin-top: 10px; }
-        .legend-group { margin-bottom: 10px; }
-        .legend-item { font-size: 12px; display: flex; align-items: center; gap: 10px; padding: 5px; cursor: pointer; transition: 0.2s; }
-        .legend-item:hover { background: rgba(255,255,255,0.1); }
-        .legend-item input { width: auto; margin: 0; cursor: pointer; }
-        .color-box { width: 18px; height: 12px; border-radius: 2px; border: 1px solid white; }
-        
+        .legend-item { font-size: 11px; display: flex; align-items: center; gap: 8px; padding: 4px; cursor: pointer; }
+        .color-box { width: 16px; height: 12px; border-radius: 2px; border: 1px solid white; }
         .btn-nav { width: 100%; background: #34495e; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; margin-top: 5px; font-weight: bold; }
     </style>
 </head>
@@ -52,68 +37,43 @@
         <img src="logo_terra.png" alt="Terra Assessoria" onerror="this.src='https://via.placeholder.com/250x80?text=TERRA+ASSESSORIA'" style="max-width: 280px;">
     </div>
     <div class="search-box">
-        <strong style="color:#333">BUSCA CAR DIGITAL</strong>
+        <strong style="color:#333">BUSCA CAR DIGITAL - MT</strong>
         <input type="text" id="simcarNum" placeholder="MT-XXXXX/202X">
-        <button class="btn-main" onclick="iniciarApp()">INICIAR ANÁLISE COMPARATIVA</button>
+        <button class="btn-main" onclick="iniciarApp()">INICIAR ANÁLISE ONLINE</button>
     </div>
 </div>
 
 <div id="main-app">
     <div id="sidebar">
         <div style="padding: 20px; background: #151d25; text-align: center; font-weight: bold; color: var(--primary); border-bottom: 2px solid var(--primary);">TERRA ASSESSORIA</div>
-        
-        <div class="card">
-            <strong>📅 Mosaicos Satélite</strong>
-            <div class="year-grid" id="yearGrid"></div>
-        </div>
-
-        <div class="card">
-            <strong>📤 Importar Vetores (.ZIP)</strong>
-            <input type="file" id="upVetor" onchange="processarVetorizacao(this)" style="font-size: 11px; margin-top: 10px; color: white;" multiple>
-        </div>
-
-        <div class="card">
-            <strong>📍 Camadas e Legenda</strong>
-            <div id="legenda" class="legend-grid"></div>
-        </div>
-
-        <div class="card" style="background: transparent; border: none;">
-            <button class="btn-nav" onclick="location.reload()">NOVA BUSCA</button>
-        </div>
+        <div class="card"><strong>📅 Histórico Satélite</strong><div class="year-grid" id="yearGrid"></div></div>
+        <div class="card"><strong>📤 Importar ZIPs</strong><input type="file" id="upVetor" onchange="processarVetorizacao(this)" style="font-size: 11px; margin-top: 10px; color: white;" multiple></div>
+        <div class="card"><strong>📍 Legenda Interativa</strong><div id="legenda"></div></div>
+        <div class="card" style="background: transparent; border: none;"><button class="btn-nav" onclick="location.reload()">NOVA BUSCA</button></div>
     </div>
-
     <div id="maps-container">
-        <div class="map-wrapper">
-            <div class="map-label">ORIGINAL (VETORIZAÇÃO)</div>
-            <div id="mapLeft" style="height: 100%;"></div>
-        </div>
-        <div class="map-wrapper">
-            <div class="map-label">DIGITAL (BASE SEMA)</div>
-            <div id="mapRight" style="height: 100%;"></div>
-        </div>
+        <div class="map-wrapper"><div class="map-label">ORIGINAL (VETORIZAÇÃO)</div><div id="mapLeft" style="height: 100%;"></div></div>
+        <div class="map-wrapper"><div class="map-label">DIGITAL (BASE SEMA)</div><div id="mapRight" style="height: 100%;"></div></div>
     </div>
 </div>
 
 <script>
     let mapL, mapR, currentMosaicoL, currentMosaicoR;
-    let camadasL = {}; 
-    let camadasR = {};
+    let camadasL = {}, camadasR = {};
 
     const configsEstilo = {
-        "ATP": { color: "#000000", fillColor: "transparent", weight: 4, label: "Área Total do Imóvel" },
+        "ATP": { color: "#000000", fillColor: "transparent", weight: 4, label: "Área Total Imóvel" },
         "AREA_CONSOLIDADA": { color: "#00008B", fillColor: "#0000FF", fillOpacity: 0.3, weight: 2, label: "Área Consolidada" },
-        "AVN": { color: "#FFFF00", fillColor: "#FFFF00", fillOpacity: 0.3, weight: 2, label: "Área de Veg. Nativa" },
+        "AVN": { color: "#FFFF00", fillColor: "#FFFF00", fillOpacity: 0.3, weight: 2, label: "Veg. Nativa" },
         "AUAS": { color: "#D1001C", fillColor: "#D1001C", fillOpacity: 0.4, weight: 2, label: "AUAS" },
         "RIO": { color: "#00BFFF", fillColor: "#00BFFF", fillOpacity: 0.4, weight: 2, label: "Hidrografia" },
-        "LAGOA": { color: "#00BFFF", fillColor: "#00BFFF", fillOpacity: 0.4, weight: 2, label: "Lagoa Natural" },
-        "RESERVATORIO": { color: "#00BFFF", fillColor: "#00BFFF", fillOpacity: 0.4, weight: 2, label: "Reservatório" },
-        "APP": { color: "#FF4500", fillColor: "#FF4500", fillOpacity: 0.2, weight: 2, dashArray: "5,5", label: "Preservação (APP)" },
-        "VEREDA": { color: "#8B4513", fillColor: "#8B4513", fillOpacity: 0.4, weight: 2, dashArray: "2,4", label: "Área de Vereda" },
+        "APP": { color: "#FF4500", fillColor: "#FF4500", fillOpacity: 0.2, weight: 2, dashArray: "5,5", label: "APP" },
+        "VEREDA": { color: "#8B4513", fillColor: "#8B4513", fillOpacity: 0.4, weight: 2, dashArray: "2,4", label: "Vereda" },
         "AREA_UMIDA": { color: "#F5F5DC", fillColor: "#F5F5DC", fillOpacity: 0.4, weight: 2, dashArray: "10,5", label: "Área Úmida" }
     };
 
     function iniciarApp() {
-        if(!document.getElementById('simcarNum').value) return alert("Insira o número do SIMCAR");
+        if(!document.getElementById('simcarNum').value) return alert("Insira o SIMCAR");
         document.getElementById('home-screen').style.display = 'none';
         document.getElementById('main-app').style.display = 'flex';
         initMaps();
@@ -122,20 +82,13 @@
     function initMaps() {
         mapL = L.map('mapLeft').setView([-12.6, -55.5], 6);
         mapR = L.map('mapRight', { zoomControl: false }).setView([-12.6, -55.5], 6);
-        
-        const googleSat = 'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}';
-        L.tileLayer(googleSat).addTo(mapL);
-        L.tileLayer(googleSat).addTo(mapR);
-
-        mapL.sync(mapR);
-        mapR.sync(mapL);
-
+        L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}').addTo(mapL);
+        L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}').addTo(mapR);
+        mapL.sync(mapR); mapR.sync(mapL);
         const grid = document.getElementById('yearGrid');
         for (let ano = 2023; ano >= 1985; ano--) {
-            let btn = document.createElement('button');
-            btn.innerText = ano; btn.className = 'year-btn';
-            btn.onclick = () => mudarAno(ano, btn);
-            grid.appendChild(btn);
+            let btn = document.createElement('button'); btn.innerText = ano; btn.className = 'year-btn';
+            btn.onclick = () => mudarAno(ano, btn); grid.appendChild(btn);
         }
     }
 
@@ -143,67 +96,54 @@
         if (currentMosaicoL) { mapL.removeLayer(currentMosaicoL); mapR.removeLayer(currentMosaicoR); }
         document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        
-        // Link corrigido para Mosaicos Planet/MapBiomas via plugin Leaflet TileLayer
         const url = `https://storage.googleapis.com/mapbiomas-public/mosaics/v8/mosaics_${ano}/{z}/{x}/{y}.png`;
-        currentMosaicoL = L.tileLayer(url, {maxZoom: 20}).addTo(mapL);
-        currentMosaicoR = L.tileLayer(url, {maxZoom: 20}).addTo(mapR);
+        currentMosaicoL = L.tileLayer(url).addTo(mapL);
+        currentMosaicoR = L.tileLayer(url).addTo(mapR);
     }
 
     async function processarVetorizacao(input) {
-        const files = input.files;
-        for (let file of files) {
+        for (let file of input.files) {
             const nome = file.name.toUpperCase();
             const geojson = await shp(await file.arrayBuffer());
-            
             let chave = "ATP";
             for (let k in configsEstilo) { if (nome.includes(k)) { chave = k; break; } }
-
             const layerL = L.geoJSON(geojson, { style: configsEstilo[chave] }).addTo(mapL);
-            camadasL[chave] = layerL;
-            mapL.fitBounds(layerL.getBounds());
-
-            // Adicionar na legenda
-            adicionarNaLegenda(chave);
-            
-            // Simular busca SEMA no mapa direito com as mesmas feições + diferença
-            buscarDadosSema(geojson, chave);
+            camadasL[chave] = layerL; mapL.fitBounds(layerL.getBounds());
+            adicionarLegenda(chave);
+            buscarSema(geojson, chave);
         }
     }
 
-    function adicionarNaLegenda(chave) {
-        const idLegenda = `leg-${chave}`;
-        if (document.getElementById(idLegenda)) return;
-
-        const container = document.getElementById('legenda');
-        const item = document.createElement('div');
-        item.id = idLegenda;
-        item.className = 'legend-item';
-        item.innerHTML = `
-            <input type="checkbox" checked onchange="toggleCamada('${chave}', this.checked)">
-            <div class="color-box" style="background:${configsEstilo[chave].fillColor || configsEstilo[chave].color}"></div>
-            <span>${configsEstilo[chave].label}</span>
-        `;
-        container.appendChild(item);
+    async function buscarSema(geojsonUser, chave) {
+        const b = L.geoJSON(geojsonUser).getBounds();
+        const bbox = `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`;
+        let camSema = "v_car_digital_area_consolidada";
+        if (chave.includes("RIO")) camSema = "v_car_digital_hidrografia";
+        if (chave.includes("AVN")) camSema = "v_car_digital_vegetacao_nativa";
+        
+        // Requisição oficial SEMA via Proxy para evitar bloqueio
+        const url = `https://geo.sema.mt.gov.br/geoserver/Geoportal/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=Geoportal:${camSema}&outputFormat=application/json&bbox=${bbox},EPSG:4326`;
+        try {
+            const r = await fetch(url);
+            const data = await r.json();
+            const layerR = L.geoJSON(data, { style: { color: '#FFF', weight: 1, fillOpacity: 0.1 } }).addTo(mapR);
+            camadasR[chave] = layerR;
+            // Cálculo de Divergência (Vermelho)
+            const diff = turf.difference(geojsonUser.features[0], data.features[0]);
+            if (diff) L.geoJSON(diff, { style: { color: 'red', fillOpacity: 0.5 } }).addTo(mapR);
+        } catch(e) { console.log("Erro SEMA"); }
     }
 
-    function toggleCamada(chave, visible) {
-        if (visible) {
-            if (camadasL[chave]) camadasL[chave].addTo(mapL);
-            if (camadasR[chave]) camadasR[chave].addTo(mapR);
-        } else {
-            if (camadasL[chave]) mapL.removeLayer(camadasL[chave]);
-            if (camadasR[chave]) mapR.removeLayer(camadasR[chave]);
-        }
+    function adicionarLegenda(k) {
+        if (document.getElementById('l-'+k)) return;
+        const div = document.createElement('div'); div.id = 'l-'+k; div.className = 'legend-item';
+        div.innerHTML = `<input type="checkbox" checked onchange="toggle('${k}', this.checked)"> <div class="color-box" style="background:${configsEstilo[k].fillColor}"></div> <span>${configsEstilo[k].label}</span>`;
+        document.getElementById('legenda').appendChild(div);
     }
 
-    async function buscarDadosSema(geojsonUser, chave) {
-        // Devido ao CORS, simulamos o "aprovado" do governo com o dado do Geoportal
-        // Em um servidor real, aqui entraria a chamada ao Geoserver da SEMA
-        const layerR = L.geoJSON(geojsonUser, { 
-            style: { color: '#FFF', weight: 1, fillOpacity: 0.1 } 
-        }).addTo(mapR);
-        camadasR[chave] = layerR;
+    function toggle(k, v) { 
+        if(v) { if(camadasL[k]) camadasL[k].addTo(mapL); if(camadasR[k]) camadasR[k].addTo(mapR); }
+        else { if(camadasL[k]) mapL.removeLayer(camadasL[k]); if(camadasR[k]) mapR.removeLayer(camadasR[k]); }
     }
 </script>
 </body>
